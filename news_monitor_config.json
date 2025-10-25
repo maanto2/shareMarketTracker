@@ -1,0 +1,37 @@
+{
+  "telegram": {
+    "bot_token": "YOUR_BOT_TOKEN_HERE",
+    "chat_id": "YOUR_CHAT_ID_HERE"
+  },
+  "news_apis": {
+    "news_api_key": null,
+    "alpha_vantage_key": null
+  },
+  "monitoring": {
+    "check_interval_minutes": 5,
+    "symbols_to_monitor": [
+      "AAPL", "MSFT", "GOOGL", "AMZN", "TSLA", "META", "NVDA",
+      "JPM", "JNJ", "V", "PG", "UNH", "HD", "MA", "DIS",
+      "NFLX", "CRM", "ADBE", "PYPL", "INTC", "CSCO", "PFE",
+      "SPY", "QQQ", "IWM", "VIX"
+    ],
+    "urgent_keywords": [
+      "earnings beat", "earnings miss", "guidance raised", "guidance lowered",
+      "dividend increase", "dividend cut", "stock split", "merger", "acquisition",
+      "partnership", "breakthrough", "fda approval", "recall", "lawsuit",
+      "ceo resignation", "ceo appointed", "layoffs", "hiring", "bankruptcy",
+      "federal reserve", "interest rates", "inflation", "recession",
+      "market crash", "correction", "all-time high", "record low",
+      "halted trading", "circuit breaker"
+    ],
+    "minimum_urgency_score": 3,
+    "send_startup_notification": true,
+    "max_alerts_per_hour": 10
+  },
+  "filters": {
+    "exclude_symbols": [],
+    "exclude_sources": [],
+    "only_market_hours": false,
+    "weekend_monitoring": true
+  }
+}

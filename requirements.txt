@@ -1,0 +1,13 @@
+# Required packages for Market Analysis System
+yfinance>=0.2.18
+requests>=2.31.0
+pandas>=2.0.0
+lxml>=4.9.0  # For HTML parsing (Wikipedia S&P 500 list)
+beautifulsoup4>=4.12.0  # For web scraping
+numpy>=1.24.0  # For numerical calculations
+python-dotenv>=1.0.0  # For environment variable management
+
+# Optional packages for enhanced functionality
+matplotlib>=3.7.0  # For creating charts
+seaborn>=0.12.0  # For statistical visualizations
+plotly>=5.15.0  # For interactive charts

@@ -1,0 +1,22 @@
+{
+  "alpha_vantage_key": null,
+  "news_api_key": null,
+  "telegram_bot_token": null,
+  "telegram_chat_id": null,
+  "analysis_settings": {
+    "top_performers_count": 25,
+    "performance_period": "1mo",
+    "earnings_days_ahead": 30,
+    "sentiment_days_back": 7,
+    "min_market_cap": 1000000000
+  },
+  "schedule": {
+    "daily_update_time": "09:00",
+    "weekly_summary_day": "monday",
+    "earnings_alert_days": [
+      1,
+      3,
+      7
+    ]
+  }
+}
