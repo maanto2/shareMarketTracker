@@ -36,6 +36,57 @@ class SentimentAnalyzer:
             'plunge', 'pessimistic', 'risk', 'threat', 'problem', 'issue', 'struggle'
         }
     
+    def _generate_trading_recommendation(self, sentiment: str, score: float, confidence: float) -> Dict[str, str]:
+        """Generate trading recommendation based on sentiment analysis"""
+        # Strong recommendations require high confidence (>70%) and clear sentiment
+        if confidence >= 70:
+            if sentiment == 'positive' and score > 1.5:
+                return {
+                    'action': 'BUY',
+                    'strength': 'STRONG',
+                    'reason': f'Strong positive sentiment (score: {score:.2f}, confidence: {confidence:.1f}%)'
+                }
+            elif sentiment == 'positive' and score > 0.5:
+                return {
+                    'action': 'BUY',
+                    'strength': 'MODERATE',
+                    'reason': f'Positive sentiment (score: {score:.2f}, confidence: {confidence:.1f}%)'
+                }
+            elif sentiment == 'negative' and score < -1.5:
+                return {
+                    'action': 'SELL',
+                    'strength': 'STRONG',
+                    'reason': f'Strong negative sentiment (score: {score:.2f}, confidence: {confidence:.1f}%)'
+                }
+            elif sentiment == 'negative' and score < -0.5:
+                return {
+                    'action': 'SELL',
+                    'strength': 'MODERATE',
+                    'reason': f'Negative sentiment (score: {score:.2f}, confidence: {confidence:.1f}%)'
+                }
+        
+        # Weak recommendations for moderate confidence (50-70%)
+        elif confidence >= 50:
+            if sentiment == 'positive' and score > 1.0:
+                return {
+                    'action': 'BUY',
+                    'strength': 'WEAK',
+                    'reason': f'Cautious positive outlook (score: {score:.2f}, confidence: {confidence:.1f}%)'
+                }
+            elif sentiment == 'negative' and score < -1.0:
+                return {
+                    'action': 'SELL',
+                    'strength': 'WEAK',
+                    'reason': f'Cautious negative outlook (score: {score:.2f}, confidence: {confidence:.1f}%)'
+                }
+        
+        # Default: HOLD for uncertain sentiment
+        return {
+            'action': 'HOLD',
+            'strength': 'NEUTRAL',
+            'reason': f'Mixed or uncertain sentiment (score: {score:.2f}, confidence: {confidence:.1f}%)'
+        }
+    
     def get_company_news(self, symbol: str, company_name: str = None, days_back: int = 7) -> List[Dict]:
         """Get news articles for a company"""
         news_articles = []
@@ -210,12 +261,18 @@ class SentimentAnalyzer:
         most_common_sentiment = sentiment_counts.most_common(1)[0][0] if sentiment_counts else 'neutral'
         confidence = sentiment_counts[most_common_sentiment] / len(article_sentiments) * 100 if article_sentiments else 0
         
+        # Generate trading recommendation
+        trading_recommendation = self._generate_trading_recommendation(
+            overall_sentiment, avg_score, confidence
+        )
+        
         return {
             'symbol': symbol,
             'company_name': company_name,
             'overall_sentiment': overall_sentiment,
             'overall_score': avg_score,
             'confidence': confidence,
+            'trading_recommendation': trading_recommendation,
             'articles_analyzed': len(articles),
             'sentiment_breakdown': dict(sentiment_counts),
             'articles': articles[:5],  # Include top 5 articles

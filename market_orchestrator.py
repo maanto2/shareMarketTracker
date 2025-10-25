@@ -199,6 +199,7 @@ class MarketAnalysisOrchestrator:
                 success = self.telegram_bot.send_market_update(
                     top_performers=results['top_performers'],
                     earnings_data=results['earnings_calendar'],
+                    sentiment_data=results.get('sentiment_analysis', []),
                     metric=metric
                 )
                 

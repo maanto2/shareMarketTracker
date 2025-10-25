@@ -113,10 +113,18 @@ class TelegramBot:
         
         return message
     
-    def format_earnings_message(self, earnings_data: List[Dict]) -> str:
-        """Format earnings calendar data for Telegram message"""
+    def format_earnings_message(self, earnings_data: List[Dict], sentiment_data: List[Dict] = None) -> str:
+        """Format earnings calendar data for Telegram message with optional sentiment-based recommendations"""
         if not earnings_data:
             return "No upcoming earnings found"
+        
+        # Create sentiment lookup dictionary
+        sentiment_lookup = {}
+        if sentiment_data:
+            for sentiment in sentiment_data:
+                symbol = sentiment.get('symbol')
+                if symbol:
+                    sentiment_lookup[symbol] = sentiment
         
         current_time = datetime.now()
         message = "<b>UPCOMING EARNINGS CALENDAR</b>\n"
@@ -144,6 +152,42 @@ class TelegramBot:
             yahoo_link = f"https://finance.yahoo.com/quote/{symbol}"
             earnings_link = f"https://finance.yahoo.com/calendar/earnings?symbol={symbol}"
             
+            # Get sentiment-based recommendation if available
+            sentiment_info = sentiment_lookup.get(symbol)
+            recommendation_text = ""
+            
+            if sentiment_info and 'trading_recommendation' in sentiment_info:
+                rec = sentiment_info['trading_recommendation']
+                action = rec.get('action', 'HOLD')
+                strength = rec.get('strength', 'NEUTRAL')
+                
+                # Format recommendation with emojis
+                if action == 'BUY':
+                    if strength == 'STRONG':
+                        rec_emoji = "🟢🟢"
+                        rec_text = f"<b>STRONG BUY</b>"
+                    elif strength == 'MODERATE':
+                        rec_emoji = "🟢"
+                        rec_text = f"<b>BUY</b>"
+                    else:
+                        rec_emoji = "🟡"
+                        rec_text = f"<b>WEAK BUY</b>"
+                elif action == 'SELL':
+                    if strength == 'STRONG':
+                        rec_emoji = "🔴🔴"
+                        rec_text = f"<b>STRONG SELL</b>"
+                    elif strength == 'MODERATE':
+                        rec_emoji = "🔴"
+                        rec_text = f"<b>SELL</b>"
+                    else:
+                        rec_emoji = "🟠"
+                        rec_text = f"<b>WEAK SELL</b>"
+                else:
+                    rec_emoji = "⚪"
+                    rec_text = f"<b>HOLD</b>"
+                
+                recommendation_text = f"📊 {rec_emoji} {rec_text}\n"
+            
             message += f"{priority} <b>{symbol}</b> - {name[:20]}\n"
             message += f"Date: {date}\n"
             
@@ -151,6 +195,8 @@ class TelegramBot:
                 message += f"In {days} days\n"
             
             message += f"Sector: {sector}\n"
+            if recommendation_text:
+                message += recommendation_text
             message += f"<a href='{yahoo_link}'>Stock Chart</a> | <a href='{earnings_link}'>Earnings Info</a>\n\n"
         
         return message
@@ -158,8 +204,9 @@ class TelegramBot:
     def send_market_update(self, 
                           top_performers: List[Dict] = None,
                           earnings_data: List[Dict] = None,
+                          sentiment_data: List[Dict] = None,
                           metric: str = 'return_pct') -> bool:
-        """Send comprehensive market update"""
+        """Send comprehensive market update with sentiment-based recommendations"""
         
         messages = []
         
@@ -168,9 +215,9 @@ class TelegramBot:
             perf_message = self.format_top_performers_message(top_performers, metric)
             messages.append(perf_message)
         
-        # Earnings calendar message
+        # Earnings calendar message with sentiment recommendations
         if earnings_data:
-            earnings_message = self.format_earnings_message(earnings_data)
+            earnings_message = self.format_earnings_message(earnings_data, sentiment_data)
             messages.append(earnings_message)
         
         # Send all messages

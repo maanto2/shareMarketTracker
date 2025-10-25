@@ -351,6 +351,11 @@ class FlashNewsMonitor:
             keywords_str = ", ".join(alert.keywords_matched[:5])  # Show first 5 keywords
             message += f"<b>Keywords:</b> {keywords_str}\n"
         
+        # Add quick sentiment-based trading recommendation
+        trading_rec = self._get_quick_trading_recommendation(alert)
+        if trading_rec:
+            message += f"<b>Quick Assessment:</b> {trading_rec}\n"
+        
         # Add clickable link with better formatting
         if alert.url and alert.url.strip():
             # Clean the URL
@@ -366,6 +371,60 @@ class FlashNewsMonitor:
             
         return message
         
+    def _get_quick_trading_recommendation(self, alert: NewsAlert) -> str:
+        """Generate quick trading recommendation based on news keywords and urgency"""
+        title_lower = alert.title.lower()
+        desc_lower = alert.description.lower() if alert.description else ""
+        full_text = f"{title_lower} {desc_lower}"
+        
+        # Define keyword groups
+        strong_positive = {
+            'earnings beat', 'exceeds expectations', 'strong quarterly', 'revenue growth',
+            'profit surge', 'raised guidance', 'upgraded', 'breakthrough', 'partnership',
+            'acquisition', 'fda approval', 'record high', 'all-time high', 'buyback'
+        }
+        
+        moderate_positive = {
+            'positive', 'growth', 'increase', 'up', 'rise', 'gain', 'outperform',
+            'beat estimates', 'strong results', 'better than expected', 'bullish'
+        }
+        
+        strong_negative = {
+            'earnings miss', 'below expectations', 'lowered guidance', 'downgraded',
+            'lawsuit', 'investigation', 'recall', 'bankruptcy', 'layoffs', 'crash',
+            'plunge', 'suspended', 'halted', 'warning', 'scandal'
+        }
+        
+        moderate_negative = {
+            'decline', 'decrease', 'down', 'fall', 'drop', 'concern', 'worry',
+            'miss estimates', 'weak results', 'disappointing', 'bearish'
+        }
+        
+        # Count keyword matches
+        strong_pos_count = sum(1 for phrase in strong_positive if phrase in full_text)
+        mod_pos_count = sum(1 for phrase in moderate_positive if phrase in full_text)
+        strong_neg_count = sum(1 for phrase in strong_negative if phrase in full_text)
+        mod_neg_count = sum(1 for phrase in moderate_negative if phrase in full_text)
+        
+        # Calculate recommendation based on urgency and keyword analysis
+        if alert.urgency_score >= 8:  # High urgency news
+            if strong_pos_count >= 1:
+                return "🟢🟢 <b>STRONG BUY</b> - Major positive catalyst"
+            elif strong_neg_count >= 1:
+                return "🔴🔴 <b>STRONG SELL</b> - Major negative catalyst"
+            elif mod_pos_count >= 2:
+                return "🟢 <b>BUY</b> - Positive momentum"
+            elif mod_neg_count >= 2:
+                return "🔴 <b>SELL</b> - Negative momentum"
+        elif alert.urgency_score >= 6:  # Medium-high urgency
+            if strong_pos_count >= 1 or mod_pos_count >= 2:
+                return "🟡 <b>WEAK BUY</b> - Cautiously positive"
+            elif strong_neg_count >= 1 or mod_neg_count >= 2:
+                return "🟠 <b>WEAK SELL</b> - Cautiously negative"
+        
+        # Default for uncertain/mixed sentiment
+        return "⚪ <b>HOLD</b> - Monitor developments"
+    
     def should_send_alert(self, alert: NewsAlert) -> bool:
         """Determine if alert should be sent"""
         # Create unique identifier for this alert

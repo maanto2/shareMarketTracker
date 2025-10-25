@@ -286,10 +286,11 @@ System ready for market monitoring! 📈
                 )
                 self.telegram_bot.send_message(performers_message)
             
-            # Send earnings calendar report
+            # Send earnings calendar report with sentiment data
             if results['earnings_calendar']:
                 earnings_message = self.telegram_bot.format_earnings_message(
-                    results['earnings_calendar']
+                    results['earnings_calendar'],
+                    results.get('sentiment_analysis', [])  # Pass sentiment data
                 )
                 self.telegram_bot.send_message(earnings_message)
             
