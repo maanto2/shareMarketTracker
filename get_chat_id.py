@@ -63,8 +63,10 @@ def get_chat_id_from_bot(bot_token):
     return None
 
 def main():
-    # Use the token from your connection test file
-    BOT_TOKEN = "8060365740:AAHBifQY747PaIfTjG39N2kdoLRUJXlDN9M"
+    # Load bot token from config
+    from config_loader import load_config
+    config = load_config()
+    BOT_TOKEN = config['telegram']['bot_token']
     
     print("Getting your Chat ID...")
     print(f"Using bot token: {BOT_TOKEN[:10]}...")

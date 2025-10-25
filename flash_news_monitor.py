@@ -517,10 +517,12 @@ class FlashNewsMonitor:
 
 def main():
     """Main function to run the flash news monitor"""
-    # Configuration - Update these with your credentials
-    BOT_TOKEN = "8060365740:AAHBifQY747PaIfTjG39N2kdoLRUJXlDN9M"
-    CHAT_ID = "5722055278"
-    NEWS_API_KEY = None  # Optional: Add your NewsAPI key for more comprehensive news
+    # Load credentials from config
+    from config_loader import load_config
+    config = load_config()
+    BOT_TOKEN = config['telegram']['bot_token']
+    CHAT_ID = config['telegram']['chat_id']
+    NEWS_API_KEY = config['news_apis'].get('news_api_key')  # Optional: Add your NewsAPI key
     
     # Create monitor instance
     monitor = FlashNewsMonitor(BOT_TOKEN, CHAT_ID, NEWS_API_KEY)

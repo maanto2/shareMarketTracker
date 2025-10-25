@@ -8,25 +8,31 @@ import os
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 
 from telegram_bot import TelegramBot
+from config_loader import load_config
 
 def test_telegram_connection():
     """Test actual Telegram bot connection and message sending"""
     print("TELEGRAM BOT CONNECTION TEST")
     print("=" * 40)
     
-    # IMPORTANT: Replace these with your actual credentials
-    BOT_TOKEN = "8060365740:AAHBifQY747PaIfTjG39N2kdoLRUJXlDN9M"  # Get from @BotFather on Telegram
-    CHAT_ID = "5722055278"      # Your chat ID or channel ID
+    # Load credentials from config
+    try:
+        config = load_config()
+        BOT_TOKEN = config['telegram']['bot_token']
+        CHAT_ID = config['telegram']['chat_id']
+    except Exception as e:
+        print(f"ERROR: Could not load configuration: {e}")
+        print("Make sure your .env file is set up correctly")
+        return False
     
     # Quick check if credentials are set
     if BOT_TOKEN == "YOUR_BOT_TOKEN_HERE" or CHAT_ID == "YOUR_CHAT_ID_HERE":
         print("SETUP REQUIRED:")
-        print("1. Go to @BotFather on Telegram")
-        print("2. Create a new bot with /newbot")
-        print("3. Get your bot token")
-        print("4. Get your chat ID (use @userinfobot)")
-        print("5. Update BOT_TOKEN and CHAT_ID in this script")
-        print("6. Run this test again")
+        print("1. Create a .env file with your credentials")
+        print("2. Copy .env.example to .env")
+        print("3. Edit .env with your bot token and chat ID")
+        print("4. Run this test again")
+        print("\nSee CONFIG_SETUP.md for detailed instructions")
         return False
     
     # Create bot instance

@@ -2,6 +2,9 @@
 .env
 news_monitor_config_personal.json
 
+# Files that might contain personal details (extra safety)
+telegram_connection_test_personal.py
+
 # Python cache files
 __pycache__/
 *.pyc
