@@ -1,0 +1,13 @@
+{
+  "bot_token": "YOUR_BOT_TOKEN_HERE",
+  "authorized_chat_ids": [
+    "YOUR_CHAT_ID_HERE"
+  ],
+  "news_api_key": null,
+  "created": "TEMPLATE_FILE",
+  "instructions": {
+    "bot_token": "Get this from @BotFather on Telegram",
+    "authorized_chat_ids": "List of Telegram chat IDs allowed to use the bot",
+    "news_api_key": "Optional: Get from newsapi.org for enhanced news analysis"
+  }
+}

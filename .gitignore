@@ -1,6 +1,7 @@
 # Sensitive configuration files
 .env
 news_monitor_config_personal.json
+telegram_stock_analyzer/telegram_config.json
 
 # Files that might contain personal details (extra safety)
 telegram_connection_test_personal.py
